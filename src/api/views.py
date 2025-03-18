@@ -1,4 +1,5 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import (
     StructureType, Structure, Role, Need, Situation, Town, Street, Genre, 
@@ -99,11 +100,14 @@ class StructureDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StructureSerializer
     permission_classes = [permissions.AllowAny]
 
-# USER (Sécurisé, seul un admin peut créer un utilisateur)
+# USER
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['birthyear']
+    search_fields = ['first_name', 'last_name']
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
