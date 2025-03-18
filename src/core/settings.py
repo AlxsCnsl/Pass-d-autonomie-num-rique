@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #other app
-    
+    #downloaded app
+    'rest_framework',
     #local app
     'api'
 ]

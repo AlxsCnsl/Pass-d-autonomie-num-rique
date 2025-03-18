@@ -9,10 +9,10 @@ class Structure(models.Model):
 
 class Role(models.Model):
     name = models.CharField(max_length=255, unique=True)
-
+    
 class Need(models.Model):
     description = models.CharField(max_length=255)
-
+    
 class Situation(models.Model):
     description = models.CharField(max_length=255)
 
