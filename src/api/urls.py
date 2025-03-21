@@ -1,11 +1,3 @@
-from django.urls import path
-from .views import (
-    StructureTypeListCreateView, StructureTypeDetailView, StructureListCreateView, StructureDetailView,
-    RoleListCreateView, RoleDetailView, NeedListCreateView, NeedDetailView, SituationListCreateView, SituationDetailView,
-    TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
-    UserListCreateView, UserDetailView, WorkshopListCreateView, WorkshopDetailView,
-    ChequeListCreateView, ChequeDetailView
-)
 
 
 from django.urls import path
@@ -13,7 +5,7 @@ from .views import (
     StructureTypeListCreateView, StructureTypeDetailView, StructureListCreateView, StructureDetailView,
     RoleListCreateView, RoleDetailView, NeedListCreateView, NeedDetailView, SituationListCreateView, SituationDetailView,
     TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
-    UserListCreateView, UserDetailView, WorkshopListCreateView, WorkshopDetailView,
+    RecipientListCreateView, RecipientDetailView, WorkshopListCreateView, WorkshopDetailView,
     ChequeListCreateView, ChequeDetailView
 )
 
@@ -50,9 +42,9 @@ urlpatterns = [
     path('structures/', StructureListCreateView.as_view(), name='structure-list'),
     path('structures/<int:pk>/', StructureDetailView.as_view(), name='structure-detail'),
 
-    # USER
-    path('users/', UserListCreateView.as_view(), name='user-list'),
-    path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
+    # RECIPIENT
+    path('recipients/', RecipientListCreateView.as_view(), name='recipient-list'),
+    path('recipients/<int:pk>/', RecipientDetailView.as_view(), name='recipient-detail'),
 
     # WORKSHOP
     path('workshops/', WorkshopListCreateView.as_view(), name='workshop-list'),

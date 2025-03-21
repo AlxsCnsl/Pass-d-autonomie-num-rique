@@ -3,13 +3,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import (
     StructureType, Structure, Role, Need, Situation, Town, Street, Genre, 
-    User, Workshop, Cheque
+    Recipient, Workshop, Cheque
 )
 
 from .serializers import (
     StructureTypeSerializer, StructureSerializer, RoleSerializer, NeedSerializer, 
     SituationSerializer, TownSerializer, StreetSerializer, GenreSerializer, 
-    UserSerializer, WorkshopSerializer, ChequeSerializer
+    RecipientSerializer, WorkshopSerializer, ChequeSerializer
 )
 
 # ROLE
@@ -100,18 +100,18 @@ class StructureDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StructureSerializer
     permission_classes = [permissions.AllowAny]
 
-# USER
-class UserListCreateView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# RECIPIENT
+class RecipientListCreateView(generics.ListCreateAPIView):
+    queryset = Recipient.objects.all()
+    serializer_class = RecipientSerializer
     permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['birthyear']
     search_fields = ['first_name', 'last_name']
 
-class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class RecipientDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Recipient.objects.all()
+    serializer_class = RecipientSerializer
     permission_classes = [permissions.AllowAny]
 
 # WORKSHOP
