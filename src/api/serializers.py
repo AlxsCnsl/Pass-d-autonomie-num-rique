@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     StructureType, Structure, Role, Need, Situation, Town, Street, Genre, 
-    User, Workshop, Cheque
+    Recipient, Workshop, Cheque
 )
 
 class StructureTypeSerializer(serializers.ModelSerializer):
@@ -46,7 +46,7 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         fields = '__all__'
 
-class UserSerializer(serializers.ModelSerializer):
+class RecipientSerializer(serializers.ModelSerializer):
     role = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all())
     town = serializers.PrimaryKeyRelatedField(queryset=Town.objects.all())
     street = serializers.PrimaryKeyRelatedField(queryset=Street.objects.all())
@@ -55,7 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
     situation = serializers.PrimaryKeyRelatedField(queryset=Situation.objects.all(), allow_null=True)
 
     class Meta:
-        model = User
+        model = Recipient
         fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -67,7 +67,7 @@ class WorkshopSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ChequeSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), allow_null=True)
+    recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all(), allow_null=True)
     structure = serializers.PrimaryKeyRelatedField(queryset=Structure.objects.all(), allow_null=True)
     workshop = serializers.PrimaryKeyRelatedField(queryset=Workshop.objects.all(), allow_null=True)
 

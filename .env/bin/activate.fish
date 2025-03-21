@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/alexisconsolo/Projet/Pass-d-autonomie-num-rique/.env
+set -gx VIRTUAL_ENV /home/alexisconsolo/Projets/Pass-d-autonomie-num-rique/.env
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH
