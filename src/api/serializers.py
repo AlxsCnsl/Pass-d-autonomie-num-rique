@@ -1,6 +1,9 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from .models import (
-    StructureType, Structure, Role, Need, Situation, Town, Street, Genre, 
+    StructureType, Structure, Agent, Role, Need, Situation, Town, Street, Genre, 
     Recipient, Workshop, Cheque
 )
 
@@ -74,3 +77,48 @@ class ChequeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cheque
         fields = '__all__'
+
+# User 
+
+from rest_framework import serializers
+from django.contrib.auth import authenticate
+from .models import Agent, Role
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name']
+
+
+class AgentSerializer(serializers.ModelSerializer):
+    role = RoleSerializer(read_only=True)
+    class Meta:
+        model = Agent
+        fields = ['id', 'username', 'role', 'structure']
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    role = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all())
+    class Meta:
+        model = Agent
+        fields = ['username', 'password', 'role']
+
+    def create(self, validated_data):
+        role = validated_data.pop('role')
+        user = Agent.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password'],
+            role=role 
+        )
+        return user
+
+
+class LoginSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user = authenticate(username=attrs['username'], password=attrs['password'])
+        if not user:
+            raise serializers.ValidationError("Identifiants invalides")
+        data['user'] = user
+        return data
