@@ -6,22 +6,27 @@ from .views import (
     RoleListCreateView, RoleDetailView, NeedListCreateView, NeedDetailView, SituationListCreateView, SituationDetailView,
     TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
     RecipientListCreateView, RecipientDetailView, WorkshopListCreateView, WorkshopDetailView,
-    ChequeListCreateView, ChequeDetailView
+    ChequeListCreateView, ChequeDetailView, RegisterView, LoginView, AgentListView, logout_view
 )
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 urlpatterns = [
     # ROLE
     path('roles/', RoleListCreateView.as_view(), name='role-list'),
     path('roles/<int:pk>/', RoleDetailView.as_view(), name='role-detail'),
-
+    
     # NEED
     path('needs/', NeedListCreateView.as_view(), name='need-list'),
     path('needs/<int:pk>/', NeedDetailView.as_view(), name='need-detail'),
-
+    
     # SITUATION
     path('situations/', SituationListCreateView.as_view(), name='situation-list'),
     path('situations/<int:pk>/', SituationDetailView.as_view(), name='situation-detail'),
-
+    
     # TOWN
     path('towns/', TownListCreateView.as_view(), name='town-list'),
     path('towns/<int:pk>/', TownDetailView.as_view(), name='town-detail'),
@@ -53,4 +58,12 @@ urlpatterns = [
     # CHEQUE
     path('cheques/', ChequeListCreateView.as_view(), name='cheque-list'),
     path('cheques/<int:pk>/', ChequeDetailView.as_view(), name='cheque-detail'),
+
+    #USER
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('logout/', logout_view, name='logout'),
+    path('agents/', AgentListView.as_view(), name='agent-list'),
 ]
