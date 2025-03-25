@@ -25,6 +25,7 @@ class Town(models.Model):
 
 
 class Street(models.Model):
+    town = models.ForeignKey(Town, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
 
 

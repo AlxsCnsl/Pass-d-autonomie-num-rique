@@ -84,7 +84,14 @@ http://127.0.0.1:xxxx/
 
 Voici la liste des endpoints disponibles dans l'API :
 
+```
+'port/api/URL'
+```
+URL = 
+
+
 ### 🔐 Authentification et Gestion des Agents
+
 
 | Méthode | URL | Description |
 |---------|-----|------------|

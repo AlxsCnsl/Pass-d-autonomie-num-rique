@@ -1,0 +1,9 @@
+[
+    {
+        "model": "api.town",
+        "pk": 1,
+        "fields": {
+            "name": "Orléans"
+        }
+    }
+]

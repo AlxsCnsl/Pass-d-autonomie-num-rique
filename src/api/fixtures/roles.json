@@ -1,0 +1,6 @@
+[
+    {"model": "api.role", "pk": 1, "fields": {"name": "admin"}},
+    {"model": "api.role", "pk": 2, "fields": {"name": "distributor"}},
+    {"model": "api.role", "pk": 3, "fields": {"name": "receptor"}}
+]
+
