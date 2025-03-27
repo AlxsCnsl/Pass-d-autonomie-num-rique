@@ -110,7 +110,7 @@ class StructureTypeDetailView(generics.RetrieveUpdateDestroyAPIView):
 class StructureListCreateView(generics.ListCreateAPIView):
     queryset = Structure.objects.all()
     serializer_class = StructureSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class StructureDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Structure.objects.all()
@@ -277,7 +277,7 @@ class LoginView(TokenObtainPairView):
 class AgentListView(generics.ListAPIView):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
 @api_view(['POST'])
 def logout_view(request):
