@@ -83,6 +83,7 @@ class RecipientFilterListSerializer(serializers.ModelSerializer):
             'id',
             'first_name',
             'last_name',
+            'birthyear',
             'genre',
             'street',
             'town',

@@ -167,6 +167,8 @@ class RecipientFilteredListView(APIView):
             filters &= Q(first_name__iexact=request.query_params['first_name'])
         if 'last_name' in request.query_params:
             filters &= Q(last_name__iexact=request.query_params['last_name'])
+        if 'birthyear' in request.query_params:
+            filters &= Q(birthyear=int(request.query_params['birthyear']))
         if 'genre' in request.query_params:
             filters &= Q(genre__name__iexact=request.query_params['genre'])
         if 'town' in request.query_params:
