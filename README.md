@@ -34,7 +34,7 @@ cd Pass-d-autonomie-num-rique
 ### créée et active l'environement virtuel :
 
 ```python
-python3 -m venv env
+python3 -m venv .env
 ```
 
 Sur Windows
