@@ -68,6 +68,9 @@ class WorkshopSerializer(serializers.ModelSerializer):
         model = Workshop
         fields = '__all__'
 
+
+#Cheques _____ ____ ___ __ _
+
 class ChequeSerializer(serializers.ModelSerializer):
     recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all(), allow_null=True)
     structure = serializers.PrimaryKeyRelatedField(queryset=Structure.objects.all(), allow_null=True)
@@ -75,15 +78,31 @@ class ChequeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cheque
-        fields = ['user_id', 'structure', 'workshop', 'distribution_at', 'used_at' ]
+        fields = '__all__'
         read_only_fields = ['created_at', 'number']
+
 
 class ChequeGeneratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cheque
         fields = ['number', 'created_at']
+        
+        
+class ChequeBasicInfoSerializer(serializers.ModelSerializer):
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
 
-# User 
+    class Meta:
+        model = Cheque
+        fields = ['id', 'number', 'first_name', 'last_name', 'created_at', 'distribution_at', 'used_at']  # adapte selon ton modèle
+
+    def get_first_name(self, obj):
+        return obj.recipient.first_name if obj.recipient else None
+
+    def get_last_name(self, obj):
+        return obj.recipient.last_name if obj.recipient else None
+
+# Users _____ ____ ___ __ _
 
 from rest_framework import serializers
 from django.contrib.auth import authenticate

@@ -10,6 +10,8 @@ from rest_framework import status
 from .permissions import IsAdmin, IsDistributor, IsReceptor
 from datetime import datetime
 from django.utils import timezone
+from django.db.models import Q
+from math import ceil
 
 from .models import (
     StructureType, Structure, Agent, Role, Need, Situation, Town, Street, Genre, 
@@ -19,7 +21,9 @@ from .models import (
 from .serializers import (
     StructureTypeSerializer, StructureSerializer, RoleSerializer, NeedSerializer, 
     SituationSerializer, TownSerializer, StreetSerializer, GenreSerializer, 
-    RecipientSerializer, WorkshopSerializer, ChequeSerializer, ChequeGeneratorSerializer, AgentSerializer, RegisterSerializer, LoginSerializer
+    RecipientSerializer, WorkshopSerializer, 
+    ChequeSerializer, ChequeGeneratorSerializer, ChequeBasicInfoSerializer,
+    AgentSerializer, RegisterSerializer, LoginSerializer
 )
 
 import logging
@@ -195,6 +199,39 @@ class ChequesGenerator(APIView):
                 numbers.add(number)
             index += 1
         return numbers
+    
+class ChequeFilteredListView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        x = int(request.query_params.get('x', 20))
+        y = int(request.query_params.get('y', 1))
+        start = (y - 1) * x
+        end = start + x
+        filters = Q()
+        if 'first_name' in request.query_params:
+            filters &= Q(recipient__first_name__iexact=request.query_params['first_name'])
+        if 'last_name' in request.query_params:
+            filters &= Q(recipient__last_name__iexact=request.query_params['last_name'])
+        if 'number_cheque' in request.query_params:
+            filters &= Q(number=request.query_params['number_cheque'])
+        if 'created_at' in request.query_params:
+            filters &= Q(created_at__date=request.query_params['created_at'])
+        if 'distribution_at' in request.query_params:
+            filters &= Q(distribution_at__date=request.query_params['distribution_at'])
+        if 'used_at' in request.query_params:
+            filters &= Q(used_at__date=request.query_params['used_at'])
+        queryset = Cheque.objects.filter(filters).order_by('number')
+        page_items = queryset[start:end]
+        serializer = ChequeBasicInfoSerializer(page_items, many=True)
+        total_matching = queryset.count()
+        return Response({
+            "total_matching": total_matching,
+            "page": y,
+            "per_page": x,
+            "total_page": ceil(total_matching/x),
+            "cheques": serializer.data
+        }, status=status.HTTP_200_OK)
+
             
 
 #USER

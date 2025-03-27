@@ -6,7 +6,7 @@ from .views import (
     RoleListCreateView, RoleDetailView, NeedListCreateView, NeedDetailView, SituationListCreateView, SituationDetailView,
     TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
     RecipientListCreateView, RecipientDetailView, WorkshopListCreateView, WorkshopDetailView,
-    ChequeListCreateView, ChequeDetailView, ChequesGenerator, RegisterView, LoginView, AgentListView, logout_view
+    ChequeListCreateView, ChequeDetailView, ChequesGenerator, ChequeFilteredListView, RegisterView, LoginView, AgentListView, logout_view
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -59,6 +59,7 @@ urlpatterns = [
     path('cheques/', ChequeListCreateView.as_view(), name='cheque-list'),
     path('cheques/<int:pk>/', ChequeDetailView.as_view(), name='cheque-detail'),
     path('cheques/generate/', ChequesGenerator.as_view(), name='cheques-generator'),
+    path('cheques/get/', ChequeFilteredListView.as_view(), name='cheque-filtered-list'),
 
     #USER
     path('register/', RegisterView.as_view(), name='register'),

@@ -1,0 +1,23 @@
+[
+    {
+        "model": "api.genre",
+        "pk": 1,
+        "fields": {
+            "name": "homme"
+        }
+    },
+    {
+        "model": "api.genre",
+        "pk": 2,
+        "fields": {
+            "name": "femme"
+        }
+    },
+    {
+        "model": "api.genre",
+        "pk": 3,
+        "fields": {
+            "name": "ne se prononce pas"
+        }
+    }
+]
