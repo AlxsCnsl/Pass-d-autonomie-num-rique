@@ -12,8 +12,6 @@ class StructureTypeSerializer(serializers.ModelSerializer):
         model = StructureType
         fields = '__all__'
         
-        
-        
 class StructureFilterListeSerializer(serializers.ModelSerializer):
     structure_name = serializers.CharField(source='name')
     structure_type_name = serializers.CharField(source='type.name')
@@ -71,6 +69,43 @@ class RecipientSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
 
+
+class RecipientFilterListSerializer(serializers.ModelSerializer):
+    genre = serializers.SerializerMethodField()
+    street = serializers.SerializerMethodField()
+    town = serializers.SerializerMethodField()
+    situation = serializers.SerializerMethodField()
+    need = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Recipient
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'genre',
+            'street',
+            'town',
+            'situation',
+            'need',
+        ]
+
+    def get_genre(self, obj):
+        return obj.genre.name if obj.genre else None
+
+    def get_street(self, obj):
+        return obj.street.name if obj.street else None
+
+    def get_town(self, obj):
+        return obj.street.town.name if obj.street and obj.street.town else None
+
+    def get_situation(self, obj):
+        return obj.situation.description if obj.situation else None
+
+    def get_need(self, obj):
+        return obj.need.description if obj.need else None
+
+
 class WorkshopSerializer(serializers.ModelSerializer):
     structure = serializers.PrimaryKeyRelatedField(queryset=Structure.objects.all())
 
@@ -103,7 +138,7 @@ class ChequeFilterListeSerializer(serializers.ModelSerializer):
     last_name = serializers.SerializerMethodField()
     class Meta:
         model = Cheque
-        fields = ['id', 'number', 'first_name', 'last_name', 'created_at', 'distribution_at', 'used_at']  # adapte selon ton modèle
+        fields = ['id', 'number', 'first_name', 'last_name', 'created_at', 'distribution_at', 'used_at']
     def get_first_name(self, obj):
         return obj.recipient.first_name if obj.recipient else None
     def get_last_name(self, obj):

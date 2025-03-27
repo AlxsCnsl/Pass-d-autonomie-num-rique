@@ -21,7 +21,7 @@ from .models import (
 from .serializers import (
     StructureTypeSerializer, StructureSerializer, StructureFilterListeSerializer, RoleSerializer, NeedSerializer, 
     SituationSerializer, TownSerializer, StreetSerializer, GenreSerializer, 
-    RecipientSerializer, WorkshopSerializer, 
+    RecipientSerializer, WorkshopSerializer, RecipientFilterListSerializer,
     ChequeSerializer, ChequeGeneratorSerializer, ChequeFilterListeSerializer,
     AgentSerializer, RegisterSerializer, LoginSerializer
 )
@@ -154,6 +154,40 @@ class RecipientDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Recipient.objects.all()
     serializer_class = RecipientSerializer
     permission_classes = [permissions.AllowAny]
+
+class RecipientFilteredListView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        x = int(request.query_params.get('x', 20))
+        y = int(request.query_params.get('y', 1))
+        start = (y - 1) * x
+        end = start + x
+        filters = Q()
+        if 'first_name' in request.query_params:
+            filters &= Q(first_name__iexact=request.query_params['first_name'])
+        if 'last_name' in request.query_params:
+            filters &= Q(last_name__iexact=request.query_params['last_name'])
+        if 'genre' in request.query_params:
+            filters &= Q(genre__name__iexact=request.query_params['genre'])
+        if 'town' in request.query_params:
+            filters &= Q(street__town__name__iexact=request.query_params['town'])
+        if 'street' in request.query_params:
+            filters &= Q(street__name__iexact=request.query_params['street'])
+        if 'situation' in request.query_params:
+            filters &= Q(situation__description__iexact=request.query_params['situation'])
+        if 'need' in request.query_params:
+            filters &= Q(need__description__iexact=request.query_params['need'])
+        queryset = Recipient.objects.filter(filters).order_by('last_name')
+        page_items = queryset[start:end]
+        serializer = RecipientFilterListSerializer(page_items, many=True)
+        total_matching = queryset.count()
+        return Response({
+            "total_matching": total_matching,
+            "page": y,
+            "per_page": x,
+            "total_page": ceil(total_matching / x),
+            "recipients": serializer.data
+        }, status=status.HTTP_200_OK)
 
 # WORKSHOP
 class WorkshopListCreateView(generics.ListCreateAPIView):

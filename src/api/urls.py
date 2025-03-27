@@ -5,7 +5,7 @@ from .views import (
     StructureTypeListCreateView, StructureTypeDetailView, StructureListCreateView, StructureDetailView, StructureFilteredListView,
     RoleListCreateView, RoleDetailView, NeedListCreateView, NeedDetailView, SituationListCreateView, SituationDetailView,
     TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
-    RecipientListCreateView, RecipientDetailView, WorkshopListCreateView, WorkshopDetailView,
+    RecipientListCreateView, RecipientDetailView, RecipientFilteredListView, WorkshopListCreateView, WorkshopDetailView,
     ChequeListCreateView, ChequeDetailView, ChequesGenerator, ChequeFilteredListView, RegisterView, LoginView, AgentListView, logout_view
 )
 from rest_framework_simplejwt.views import (
@@ -51,6 +51,7 @@ urlpatterns = [
     # RECIPIENT
     path('recipients/', RecipientListCreateView.as_view(), name='recipient-list'),
     path('recipients/<int:pk>/', RecipientDetailView.as_view(), name='recipient-detail'),
+    path('recipients/get/', RecipientFilteredListView.as_view(), name='recipient-filtered_list'),
     
     # WORKSHOP
     path('workshops/', WorkshopListCreateView.as_view(), name='workshop-list'),
