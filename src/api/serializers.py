@@ -50,7 +50,6 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RecipientSerializer(serializers.ModelSerializer):
-    role = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all())
     town = serializers.PrimaryKeyRelatedField(queryset=Town.objects.all())
     street = serializers.PrimaryKeyRelatedField(queryset=Street.objects.all())
     genre = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all())
@@ -76,7 +75,13 @@ class ChequeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cheque
-        fields = '__all__'
+        fields = ['user_id', 'structure', 'workshop', 'distribution_at', 'used_at' ]
+        read_only_fields = ['created_at', 'number']
+
+class ChequeGeneratorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cheque
+        fields = ['number', 'created_at']
 
 # User 
 

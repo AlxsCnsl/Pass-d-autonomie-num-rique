@@ -55,9 +55,16 @@ pip install -r requirements.txt
 ### Configurez la base de données :
 
 ```
-python manage.py makemigration
-python manage.py makemigration api
-python manage.py migrate
+python3 manage.py makemigration
+python3 manage.py makemigration api
+python3 manage.py migrate
+```
+et
+
+```
+python3 src/manage.py loaddata roles
+python3 src/manage.py loaddata towns
+python3 src/manage.py loaddata orleans_street
 ```
 
 ### Créez un superutilisateur :

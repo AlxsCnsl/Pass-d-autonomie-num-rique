@@ -148,12 +148,17 @@ AUTH_USER_MODEL = 'api.Agent'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "https://tonsite.com",  # Frontend en production
-    "http://localhost:3000",  # Si tu testes en local avec React
-    "http://127.0.0.1:8020",  # Pour le développement local
+    "http://127.0.0.1:9090", # test NPM
+    "http://127.0.0.1:8050",  #runserver local
+]
+
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

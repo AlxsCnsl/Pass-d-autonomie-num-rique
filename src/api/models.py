@@ -54,7 +54,7 @@ class Workshop(models.Model):
 
 class Cheque(models.Model):
     number = models.IntegerField(unique=True)
-    user = models.ForeignKey(Recipient, on_delete=models.CASCADE, null=True, blank=True)
+    recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     distribution_at = models.DateTimeField(null=True, blank=True)
     used_at = models.DateTimeField(null=True, blank=True)

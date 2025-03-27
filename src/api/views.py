@@ -5,8 +5,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework import status
 from .permissions import IsAdmin, IsDistributor, IsReceptor
+from datetime import datetime
+from django.utils import timezone
 
 from .models import (
     StructureType, Structure, Agent, Role, Need, Situation, Town, Street, Genre, 
@@ -16,7 +19,7 @@ from .models import (
 from .serializers import (
     StructureTypeSerializer, StructureSerializer, RoleSerializer, NeedSerializer, 
     SituationSerializer, TownSerializer, StreetSerializer, GenreSerializer, 
-    RecipientSerializer, WorkshopSerializer, ChequeSerializer, AgentSerializer, RegisterSerializer, LoginSerializer
+    RecipientSerializer, WorkshopSerializer, ChequeSerializer, ChequeGeneratorSerializer, AgentSerializer, RegisterSerializer, LoginSerializer
 )
 
 import logging
@@ -37,7 +40,7 @@ class RoleDetailView(generics.RetrieveUpdateDestroyAPIView):
 class NeedListCreateView(generics.ListCreateAPIView):
     queryset = Need.objects.all()
     serializer_class = NeedSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class NeedDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Need.objects.all()
@@ -48,7 +51,7 @@ class NeedDetailView(generics.RetrieveUpdateDestroyAPIView):
 class SituationListCreateView(generics.ListCreateAPIView):
     queryset = Situation.objects.all()
     serializer_class = SituationSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class SituationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Situation.objects.all()
@@ -59,7 +62,7 @@ class SituationDetailView(generics.RetrieveUpdateDestroyAPIView):
 class TownListCreateView(generics.ListCreateAPIView):
     queryset = Town.objects.all()
     serializer_class = TownSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class TownDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Town.objects.all()
@@ -70,7 +73,7 @@ class TownDetailView(generics.RetrieveUpdateDestroyAPIView):
 class StreetListCreateView(generics.ListCreateAPIView):
     queryset = Street.objects.all()
     serializer_class = StreetSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class StreetDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Street.objects.all()
@@ -81,7 +84,7 @@ class StreetDetailView(generics.RetrieveUpdateDestroyAPIView):
 class GenreListCreateView(generics.ListCreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class GenreDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Genre.objects.all()
@@ -92,7 +95,7 @@ class GenreDetailView(generics.RetrieveUpdateDestroyAPIView):
 class StructureTypeListCreateView(generics.ListCreateAPIView):
     queryset = StructureType.objects.all()
     serializer_class = StructureTypeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class StructureTypeDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StructureType.objects.all()
@@ -135,26 +138,70 @@ class WorkshopDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WorkshopSerializer
     permission_classes = [permissions.AllowAny]
 
-# CHEQUE (Sécurisé, seul un admin peut créer un chèque)
+# CHEQUE
 class ChequeListCreateView(generics.ListCreateAPIView):
     queryset = Cheque.objects.all()
     serializer_class = ChequeSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
 
 class ChequeDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cheque.objects.all()
     serializer_class = ChequeSerializer
     permission_classes = [permissions.AllowAny]
+    
+    
+class ChequesGenerator(APIView):
+    #permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    permission_classes = [permissions.AllowAny]
+    def post(self, request):
+        try:
+            count = request.query_params.get("count")
+            if count is None:
+                return Response({"error": "Le paramètre 'count' est requis."},
+                                status=status.HTTP_400_BAD_REQUEST)
+            try:
+                count = int(count)
+                if count < 1:
+                    raise ValueError
+            except ValueError:
+                return Response({"error": "Le paramètre 'count' doit être un nombre entier positif."},
+                                status=status.HTTP_400_BAD_REQUEST)
+            numbers = self.generate_numbers(count)
+            date_obj = datetime.now().date()
+            cheques = [Cheque(number=number, created_at=date_obj) for number in numbers]
+            Cheque.objects.bulk_create(cheques)
+            queryset = Cheque.objects.filter(number__in=numbers)
+            serializer = ChequeGeneratorSerializer(cheques, many=True)
+            return Response({"message": f"{count} chèques générés avec succès!", "cheques": serializer.data},
+                            status=status.HTTP_201_CREATED)
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+            
+    def generate_numbers(self, count : int):
+        numbers = set()
+        date = datetime.now()
+        year = date.year
+        month = date.month
+        day =date.day
+        sufix = f"{year}{str(month).zfill(2)}{str(day).zfill(2)}"#exemple 20250101
+        index = 0
+        while(len(numbers) < count):
+            prefix = str(index).zfill(4)#exemple 0001
+            number = int(f"{sufix}{prefix}") #exemple 202501010001
+            if(not Cheque.objects.filter(number=number).exists()):
+                numbers.add(number)
+            index += 1
+        return numbers
+            
 
 #USER
 class RegisterView(generics.CreateAPIView):
     queryset = Agent.objects.all()
     serializer_class = RegisterSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
-
-
-
+    permission_classes = [permissions.AllowAny]
 
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
