@@ -11,6 +11,16 @@ class StructureTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = StructureType
         fields = '__all__'
+        
+        
+        
+class StructureFilterListeSerializer(serializers.ModelSerializer):
+    structure_name = serializers.CharField(source='name')
+    structure_type_name = serializers.CharField(source='type.name')
+
+    class Meta:
+        model = Structure
+        fields = ['id', 'structure_name', 'structure_type_name']
 
 class StructureSerializer(serializers.ModelSerializer):
     type = serializers.PrimaryKeyRelatedField(queryset=StructureType.objects.all())
@@ -88,25 +98,18 @@ class ChequeGeneratorSerializer(serializers.ModelSerializer):
         fields = ['number', 'created_at']
         
         
-class ChequeBasicInfoSerializer(serializers.ModelSerializer):
+class ChequeFilterListeSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
-
     class Meta:
         model = Cheque
         fields = ['id', 'number', 'first_name', 'last_name', 'created_at', 'distribution_at', 'used_at']  # adapte selon ton modèle
-
     def get_first_name(self, obj):
         return obj.recipient.first_name if obj.recipient else None
-
     def get_last_name(self, obj):
         return obj.recipient.last_name if obj.recipient else None
 
 # Users _____ ____ ___ __ _
-
-from rest_framework import serializers
-from django.contrib.auth import authenticate
-from .models import Agent, Role
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:

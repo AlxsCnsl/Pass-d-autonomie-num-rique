@@ -34,7 +34,7 @@ cd Pass-d-autonomie-num-rique
 ### créée et active l'environement virtuel :
 
 ```python
-python -m venv env
+python3 -m venv env
 ```
 
 Sur Windows
@@ -55,23 +55,24 @@ pip install -r requirements.txt
 ### Configurez la base de données :
 
 ```
-python3 manage.py makemigration
-python3 manage.py makemigration api
-python3 manage.py migrate
+python3 src/manage.py makemigration
+python3 src/manage.py makemigration api
+python3 src/manage.py migrate
 ```
 et
 
 ```
-python3 src/manage.py loaddata roles
-python3 src/manage.py loaddata towns
+python3 src/manage.py loaddata roles.json
+python3 src/manage.py loaddata structure-types.json
+python3 src/manage.py loaddata towns.json
 python3 src/manage.py loaddata genres.json
-python3 src/manage.py loaddata orleans_street
+python3 src/manage.py loaddata orleans_streets.json
 ```
 
 ### Créez un superutilisateur :
 
 ```
-python manage.py createsuperuser
+python3 src/manage.py createsuperuser
 
 ```
 
@@ -79,7 +80,7 @@ python manage.py createsuperuser
 
 Démarrez le serveur Django :
 ```
-python manage.py runserver xxxx
+python3 src/manage.py runserver xxxx
 ```
 ou remplace xxxx par le numero de port souhaité
 

@@ -19,10 +19,10 @@ from .models import (
 )
 
 from .serializers import (
-    StructureTypeSerializer, StructureSerializer, RoleSerializer, NeedSerializer, 
+    StructureTypeSerializer, StructureSerializer, StructureFilterListeSerializer, RoleSerializer, NeedSerializer, 
     SituationSerializer, TownSerializer, StreetSerializer, GenreSerializer, 
     RecipientSerializer, WorkshopSerializer, 
-    ChequeSerializer, ChequeGeneratorSerializer, ChequeBasicInfoSerializer,
+    ChequeSerializer, ChequeGeneratorSerializer, ChequeFilterListeSerializer,
     AgentSerializer, RegisterSerializer, LoginSerializer
 )
 
@@ -105,6 +105,30 @@ class StructureTypeDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StructureType.objects.all()
     serializer_class = StructureTypeSerializer
     permission_classes = [permissions.AllowAny]
+    
+class StructureFilteredListView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        x = int(request.query_params.get('x', 20))  # éléments par page
+        y = int(request.query_params.get('y', 1))   # numéro de page
+        start = (y - 1) * x
+        end = start + x
+        filters = Q()
+        if 'structure_name' in request.query_params:
+            filters &= Q(name__icontains=request.query_params['structure_name'])
+        if 'structure_type_name' in request.query_params:
+            filters &= Q(type__name__icontains=request.query_params['structure_type_name'])
+        queryset = Structure.objects.filter(filters).order_by('name')
+        total_matching = queryset.count()
+        page_items = queryset[start:end]
+        serializer = StructureFilterListeSerializer(page_items, many=True)
+        return Response({
+            "total_matching": total_matching,
+            "page": y,
+            "per_page": x,
+            "total_page": ceil(total_matching / x),
+            "structures": serializer.data
+        }, status=status.HTTP_200_OK)
 
 # STRUCTURE
 class StructureListCreateView(generics.ListCreateAPIView):
@@ -222,7 +246,7 @@ class ChequeFilteredListView(APIView):
             filters &= Q(used_at__date=request.query_params['used_at'])
         queryset = Cheque.objects.filter(filters).order_by('number')
         page_items = queryset[start:end]
-        serializer = ChequeBasicInfoSerializer(page_items, many=True)
+        serializer = ChequeFilterListeSerializer(page_items, many=True)
         total_matching = queryset.count()
         return Response({
             "total_matching": total_matching,
@@ -232,7 +256,6 @@ class ChequeFilteredListView(APIView):
             "cheques": serializer.data
         }, status=status.HTTP_200_OK)
 
-            
 
 #USER
 class RegisterView(generics.CreateAPIView):

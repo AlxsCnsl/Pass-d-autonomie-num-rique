@@ -1,0 +1,5 @@
+[
+    {"model": "api.structuretype", "pk": 1, "fields": {"name": "administrateur"}},
+    {"model": "api.structuretype", "pk": 2, "fields": {"name": "distributeur"}},
+    {"model": "api.structuretype", "pk": 3, "fields": {"name": "récépteur"}}
+]

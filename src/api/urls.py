@@ -2,7 +2,7 @@
 
 from django.urls import path
 from .views import (
-    StructureTypeListCreateView, StructureTypeDetailView, StructureListCreateView, StructureDetailView,
+    StructureTypeListCreateView, StructureTypeDetailView, StructureListCreateView, StructureDetailView, StructureFilteredListView,
     RoleListCreateView, RoleDetailView, NeedListCreateView, NeedDetailView, SituationListCreateView, SituationDetailView,
     TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
     RecipientListCreateView, RecipientDetailView, WorkshopListCreateView, WorkshopDetailView,
@@ -46,6 +46,7 @@ urlpatterns = [
     # STRUCTURE
     path('structures/', StructureListCreateView.as_view(), name='structure-list'),
     path('structures/<int:pk>/', StructureDetailView.as_view(), name='structure-detail'),
+    path('structures/get/', StructureFilteredListView.as_view(), name='structure-filtered-list'),
 
     # RECIPIENT
     path('recipients/', RecipientListCreateView.as_view(), name='recipient-list'),
