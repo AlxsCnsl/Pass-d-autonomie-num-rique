@@ -64,6 +64,7 @@ et
 ```
 python3 src/manage.py loaddata roles
 python3 src/manage.py loaddata towns
+python3 src/manage.py loaddata genres.json
 python3 src/manage.py loaddata orleans_street
 ```
 
