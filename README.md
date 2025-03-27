@@ -43,7 +43,7 @@ env\Scripts\activate
 ```
 Sur macOS / Linux
 ```
-source env/bin/activate
+source .env/bin/activate
 ```
 
 ### Installez les dépendances :
@@ -82,7 +82,7 @@ Démarrez le serveur Django :
 ```
 python3 src/manage.py runserver xxxx
 ```
-ou remplace xxxx par le numero de port souhaité
+ou remplace xxxx par le numero de port souhaité (8050 si possible)
 
 L'API sera disponible à l'adresse :
 ```
