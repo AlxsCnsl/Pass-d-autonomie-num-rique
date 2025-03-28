@@ -12,10 +12,13 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DOWNLOADS_ROOT = os.path.join(BASE_DIR, 'downloadedFiles')
+DOWNLOADS_CHEQUES_CSV_ROOT = os.path.join(DOWNLOADS_ROOT, 'chequesCSV')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -175,3 +178,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
 }
+
+
+
+DOWNLOADS_ROOT = os.path.join(BASE_DIR, 'downloadedFiles')

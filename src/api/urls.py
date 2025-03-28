@@ -7,7 +7,8 @@ from .views import (
     TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
     RecipientListCreateView, RecipientDetailView, RecipientFilteredListView, WorkshopListCreateView, WorkshopDetailView,
     ChequeListCreateView, ChequeDetailView, ChequesGenerator, ChequeFilteredListView, AssignChequesView, RegisterView, 
-    LoginView, AgentListView, AgentDetailView, logout_view
+    LoginView, AgentListView, AgentDetailView, logout_view, 
+    DownloadChequesFileView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -73,4 +74,7 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('agents/', AgentListView.as_view(), name='agent-list'),
     path('agents/<int:pk>/', AgentDetailView.as_view(), name='agent-detail'),
-]
+    
+    #file
+    path('files/cheque/download/<str:file_name>', DownloadChequesFileView.as_view(), name='download_file'),
+]        

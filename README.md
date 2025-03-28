@@ -94,9 +94,7 @@ Voici la liste des endpoints disponibles dans l'API :
 ```
 URL = 
 
-
 ### 🔐 Authentification et Gestion des Agents
-
 
 | Méthode | URL | Description |
 |---------|-----|------------|
@@ -106,6 +104,7 @@ URL =
 | `POST`  | `/token/refresh/` | Rafraîchissement du token JWT |
 | `POST`  | `/logout/` | Déconnexion de l'agent |
 | `GET`   | `/agents/` | Liste des agents |
+| `GET`   | `/agents/<int:pk>/` | Détails d'un agent |
 
 ### 🏢 Gestion des Structures et Types de Structures
 
@@ -115,6 +114,7 @@ URL =
 | `GET` / `PUT` / `DELETE` | `/structure-types/<int:pk>/` | Détails, modification et suppression d'un type de structure |
 | `GET` / `POST` | `/structures/` | Liste et création de structures |
 | `GET` / `PUT` / `DELETE` | `/structures/<int:pk>/` | Détails, modification et suppression d'une structure |
+| `GET` | `/structures/get/` | Liste filtrée des structures |
 
 ### 🏠 Gestion des Lieux (Villes & Rues)
 
@@ -131,6 +131,7 @@ URL =
 |---------|-----|------------|
 | `GET` / `POST` | `/recipients/` | Liste et création de bénéficiaires |
 | `GET` / `PUT` / `DELETE` | `/recipients/<int:pk>/` | Détails, modification et suppression d'un bénéficiaire |
+| `GET` | `/recipients/get/` | Liste filtrée des bénéficiaires |
 
 ### 🎭 Gestion des Genres
 
@@ -152,6 +153,9 @@ URL =
 |---------|-----|------------|
 | `GET` / `POST` | `/cheques/` | Liste et création de chèques |
 | `GET` / `PUT` / `DELETE` | `/cheques/<int:pk>/` | Détails, modification et suppression d'un chèque |
+| `POST` | `/cheques/generate/` | Génération de chèques |
+| `GET` | `/cheques/get/` | Liste filtrée des chèques |
+| `POST` | `/cheques/assign/` | Attribution de chèques |
 
 ### 🚨 Gestion des Besoins et Situations
 
@@ -169,4 +173,10 @@ URL =
 | `GET` / `POST` | `/roles/` | Liste et création de rôles |
 | `GET` / `PUT` / `DELETE` | `/roles/<int:pk>/` | Détails, modification et suppression d'un rôle |
 
----
+### 📂 Gestion des Fichiers
+
+| Méthode | URL | Description |
+|---------|-----|------------|
+| `GET` | `/files/cheque/download/<str:file_name>` | Téléchargement d'un fichier de chèques |
+
+--

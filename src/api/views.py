@@ -12,10 +12,19 @@ from datetime import datetime
 from django.utils.timezone import now
 from django.db.models import Q
 from math import ceil
+from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404
+import csv
+import os
+from django.conf import settings
+from django.http import HttpResponse
+from django.http import StreamingHttpResponse
+from .models import DownloadFile
+
 
 from .models import (
     StructureType, Structure, Agent, Role, Need, Situation, Town, Street, Genre, 
-    Recipient, Workshop, Cheque
+    Recipient, Workshop, Cheque, DownloadFile
 )
 
 from .serializers import (
@@ -215,8 +224,8 @@ class ChequeDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     
 class ChequesGenerator(APIView):
-    #permission_classes = [permissions.IsAuthenticated, IsAdmin]
     permission_classes = [permissions.AllowAny]
+
     def post(self, request):
         try:
             count = request.query_params.get("count")
@@ -236,6 +245,9 @@ class ChequesGenerator(APIView):
             Cheque.objects.bulk_create(cheques)
             queryset = Cheque.objects.filter(number__in=numbers)
             serializer = ChequeGeneratorSerializer(cheques, many=True)
+            file_path = self.create_csv(numbers)
+            download_file = DownloadFile(name=f"cheques_{date_obj}.csv", path=file_path)
+            download_file.save()
             return Response({"message": f"{count} chèques générés avec succès!", "cheques": serializer.data},
                             status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -243,22 +255,49 @@ class ChequesGenerator(APIView):
             print(traceback.format_exc())
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            
-    def generate_numbers(self, count : int):
+    def generate_numbers(self, count: int):
         numbers = set()
         date = datetime.now()
         year = date.year
         month = date.month
-        day =date.day
-        sufix = f"{year}{str(month).zfill(2)}{str(day).zfill(2)}"#exemple 20250101
+        day = date.day
+        sufix = f"{year}{str(month).zfill(2)}{str(day).zfill(2)}"  # Exemple 20250101
         index = 0
-        while(len(numbers) < count):
-            prefix = str(index).zfill(4)#exemple 0001
-            number = int(f"{sufix}{prefix}") #exemple 202501010001
-            if(not Cheque.objects.filter(number=number).exists()):
+        while len(numbers) < count:
+            prefix = str(index).zfill(4)  # Exemple 0001
+            number = int(f"{sufix}{prefix}")  # Exemple 202501010001
+            if not Cheque.objects.filter(number=number).exists():
                 numbers.add(number)
             index += 1
         return numbers
+
+    def create_csv(self, numbers):
+        base_path = settings.DOWNLOADS_CHEQUES_CSV_ROOT
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        base_name = f"cheques_{datetime.now().date()}"
+        extension = ".csv"
+        file_path = generate_unique_filename(base_path, base_name, extension)
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["number"])
+            for number in sorted(numbers):
+                writer.writerow([number])
+        return file_path
+    
+def generate_unique_filename( base_path, base_name, extension):
+    counter = 1
+    unique_name = f"{base_name}{extension}"
+    unique_path = os.path.join(base_path, unique_name)
+    while os.path.exists(unique_path):
+        unique_name = f"{base_name}({counter}){extension}"
+        unique_path = os.path.join(base_path, unique_name)
+        counter += 1
+    
+    return unique_path
+
+    
+
     
 class ChequeFilteredListView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -393,3 +432,17 @@ def logout_view(request):
         return Response({"message": "Déconnexion réussie"}, status=200)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+    
+class DownloadChequesFileView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, file_name):
+        file_path = os.path.join(settings.DOWNLOADS_CHEQUES_CSV_ROOT, file_name)
+
+        if not os.path.exists(file_path):
+            raise Http404("Le fichier n'existe pas.")
+
+        response = FileResponse(open(file_path, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+        return response
+    
