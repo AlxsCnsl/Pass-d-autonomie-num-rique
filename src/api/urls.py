@@ -6,7 +6,8 @@ from .views import (
     RoleListCreateView, RoleDetailView, NeedListCreateView, NeedDetailView, SituationListCreateView, SituationDetailView,
     TownListCreateView, TownDetailView, StreetListCreateView, StreetDetailView, GenreListCreateView, GenreDetailView,
     RecipientListCreateView, RecipientDetailView, RecipientFilteredListView, WorkshopListCreateView, WorkshopDetailView,
-    ChequeListCreateView, ChequeDetailView, ChequesGenerator, ChequeFilteredListView, RegisterView, LoginView, AgentListView, logout_view
+    ChequeListCreateView, ChequeDetailView, ChequesGenerator, ChequeFilteredListView, RegisterView, 
+    LoginView, AgentListView, AgentDetailView, logout_view
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -70,4 +71,5 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', logout_view, name='logout'),
     path('agents/', AgentListView.as_view(), name='agent-list'),
+    path('agents/<int:pk>/', AgentDetailView.as_view(), name='agent-detail'),
 ]

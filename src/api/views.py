@@ -338,6 +338,11 @@ class AgentListView(generics.ListAPIView):
     serializer_class = AgentSerializer
     permission_classes = [permissions.AllowAny]
     
+class AgentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+    permission_classes = [permissions.AllowAny]
+    
 @api_view(['POST'])
 def logout_view(request):
     """Déconnexion en blacklistant le token"""
