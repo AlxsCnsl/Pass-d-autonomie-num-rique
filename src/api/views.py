@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from .permissions import IsAdmin, IsDistributor, IsReceptor
 from datetime import datetime
-from django.utils import timezone
+from django.utils.timezone import now
 from django.db.models import Q
 from math import ceil
 
@@ -22,7 +22,7 @@ from .serializers import (
     StructureTypeSerializer, StructureSerializer, StructureFilterListeSerializer, RoleSerializer, NeedSerializer, 
     SituationSerializer, TownSerializer, StreetSerializer, GenreSerializer, 
     RecipientSerializer, WorkshopSerializer, RecipientFilterListSerializer,
-    ChequeSerializer, ChequeGeneratorSerializer, ChequeFilterListeSerializer,
+    ChequeSerializer, ChequeGeneratorSerializer, ChequeFilterListeSerializer, AssignChequesSerializer,
     AgentSerializer, RegisterSerializer, LoginSerializer
 )
 
@@ -290,6 +290,46 @@ class ChequeFilteredListView(APIView):
             "per_page": x,
             "total_page": ceil(total_matching/x),
             "cheques": serializer.data
+        }, status=status.HTTP_200_OK)
+        
+class AssignChequesView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def post(self, request):
+        logger.info("Received request: %s", request.data)
+        serializer = AssignChequesSerializer(data=request.data)
+        if not serializer.is_valid():
+            logger.error("Validation error: %s", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        cheque_id = serializer.validated_data['cheque_id']
+        recipient_id = serializer.validated_data['recipient_id']
+        try:
+            cheque = Cheque.objects.get(id=cheque_id)
+            logger.info("Cheque found: %s", cheque.number)
+        except Cheque.DoesNotExist:
+            logger.error("Cheque not found: %d", cheque_id)
+            return Response({"error": "Cheque not found"}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            recipient = Recipient.objects.get(id=recipient_id)
+            logger.info("Recipient found: %s %s", recipient.first_name, recipient.last_name)
+        except Recipient.DoesNotExist:
+            logger.error("Recipient not found: %d", recipient_id)
+            return Response({"error": "Recipient not found"}, status=status.HTTP_404_NOT_FOUND)
+        if cheque.number % 10 != 0:
+            logger.error("Cheque number does not start with 0: %d", cheque.number)
+            return Response({"error": "Cheque number must start with 0 in the unit place"}, status=status.HTTP_400_BAD_REQUEST)
+        cheque_numbers = [cheque.number + i for i in range(10)]
+        cheques = Cheque.objects.filter(number__in=cheque_numbers)
+        if cheques.count() < 10:
+            logger.error("Not enough consecutive cheques available. Needed: %s, Found: %d", cheque_numbers, cheques.count())
+            return Response({"error": "Not enough consecutive cheques available"}, status=status.HTTP_400_BAD_REQUEST)
+        if cheques.filter(recipient__isnull=False).exists():
+            logger.error("One or more cheques are already assigned")
+            return Response({"error": "One or more cheques are already assigned"}, status=status.HTTP_400_BAD_REQUEST)
+        cheques.update(recipient=recipient, distribution_at=now())
+        logger.info("Successfully assigned cheques: %s", cheque_numbers)
+        return Response({
+            "message": "Cheques successfully assigned",
+            "cheques": list(cheques.values("id", "number", "recipient_id", "distribution_at"))
         }, status=status.HTTP_200_OK)
 
 

@@ -144,6 +144,12 @@ class ChequeFilterListeSerializer(serializers.ModelSerializer):
         return obj.recipient.first_name if obj.recipient else None
     def get_last_name(self, obj):
         return obj.recipient.last_name if obj.recipient else None
+    
+class AssignChequesSerializer(serializers.Serializer):
+    cheque_id = serializers.IntegerField()
+    recipient_id = serializers.IntegerField()
+    
+    
 
 # Users _____ ____ ___ __ _
 
