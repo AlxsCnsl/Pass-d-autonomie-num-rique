@@ -62,18 +62,14 @@ python3 src/manage.py migrate
 et
 
 ```
-python3 src/manage.py loaddata roles.json
-python3 src/manage.py loaddata structure-types.json
-python3 src/manage.py loaddata towns.json
-python3 src/manage.py loaddata genres.json
-python3 src/manage.py loaddata orleans_streets.json
+python3 src/manage.py loaddata genres.json situations.json structure-types.json roles.json
+python3 src/manage.py loaddata towns.json  orleans_streets.json
 ```
 
 ### Créez un superutilisateur :
 
 ```
 python3 src/manage.py createsuperuser
-
 ```
 
 ## 🚀 Lancement
