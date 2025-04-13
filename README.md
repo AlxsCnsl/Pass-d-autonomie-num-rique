@@ -1,7 +1,5 @@
 # 🚀 PASS D AUTONOMIE NUMERIQUE API
 
-Une API REST développée avec Django et Django REST Framework (DRF) pour [décrire brièvement l'objectif de votre API].
-
 ## 📌 Table des matières
 
 - [📦 Prérequis](#-prérequis)
